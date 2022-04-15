@@ -22,7 +22,10 @@ public class GatewayApplication {
     @Bean
     public RouteLocator myRoutes(RouteLocatorBuilder builder, UriConfiguration uriConfiguration) {
         String httpUri = uriConfiguration.getHttpbin();
-        return builder.routes()
+
+        var routeBuilder = builder.routes();
+
+        routeBuilder
                 .route(p -> p
                         .path("/get")
                         .filters(f -> f.addRequestHeader("Hello", "World"))
@@ -33,8 +36,11 @@ public class GatewayApplication {
                                 .circuitBreaker(config -> config
                                         .setName("mycmd")
                                         .setFallbackUri("forward:/fallback")))
-                        .uri(httpUri))
-                .build();
+                        .uri(httpUri));
+
+        SecondFileTest.addMoreRoutes(routeBuilder);
+
+        return routeBuilder.build();
     }
 
     @RequestMapping("/fallback")
